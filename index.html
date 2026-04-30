@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geane Patriota | Luxo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loading-overlay" class="hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <header class="dark-bg">
+        <div class="header-container">
+            <img src="logo.png" alt="Geane Patriota Logo" class="site-logo" onclick="navigate('home')">
+            <nav id="main-nav">
+                <a onclick="navigate('home')">Loja</a>
+                <a onclick="navigate('croquis')">Croquis</a>
+                <a onclick="navigate('portfolio')">Portfólio</a>
+                <div id="admin-links" class="hidden">
+                    <a onclick="navigate('adm-clients')">Clientes</a>
+                    <a onclick="navigate('adm-orders')">Pedidos</a>
+                    <a onclick="navigate('adm-products')">Produtos</a>
+                </div>
+            </nav>
+            <div class="user-menu" onclick="toggleUserMenu()">
+                <div id="user-avatar" class="avatar">?</div>
+                <div id="user-dropdown" class="dropdown hidden">
+                    <div id="unauth-menu">
+                        <p onclick="navigate('login')">Entrar / Cadastrar</p>
+                    </div>
+                    <div id="auth-menu" class="hidden">
+                        <p id="user-greeting">Olá!</p>
+                        <p onclick="viewCart()">Carrinho (<span id="cart-count">0</span>)</p>
+                        <p onclick="doLogout()">Sair da Conta</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-content">
+        <!-- LOJA -->
+        <section id="view-home" class="view active">
+            <h1 class="page-title">Coleção Exclusiva</h1>
+            <div id="product-grid" class="grid"></div>
+        </section>
+
+        <!-- DETALHES DO PRODUTO -->
+        <section id="view-product-detail" class="view hidden">
+            <div class="product-detail-container">
+                <div class="product-images" id="pd-images"></div>
+                <div class="product-info">
+                    <h2 id="pd-title"></h2>
+                    <p id="pd-price" class="price"></p>
+                    <p id="pd-desc" class="description"></p>
+                    <div class="actions">
+                        <button onclick="changeQty(-1)">-</button>
+                        <span id="pd-qty">1</span>
+                        <button onclick="changeQty(1)">+</button>
+                        <button class="btn btn-dark" onclick="addToCart()">Adicionar ao Carrinho</button>
+                        <button class="btn btn-outline" onclick="goToCheckout()">Comprar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHECKOUT -->
+        <section id="view-checkout" class="view hidden">
+            <h2 class="page-title">Finalizar Pedido</h2>
+            <div class="checkout-container">
+                <div id="checkout-cart" class="cart-items"></div>
+                <div class="checkout-form">
+                    <h3>Total: <span id="checkout-total">R$ 0,00</span></h3>
+                    <select id="checkout-shipping">
+                        <option value="entrega">Entrega</option>
+                        <option value="retirada">Retirada na Loja</option>
+                    </select>
+                    <textarea id="checkout-address" placeholder="Endereço Completo (se entrega)"></textarea>
+                    
+                    <select id="checkout-payment">
+                        <option value="pix">PIX</option>
+                        <option value="cartao">Cartão (InfinitePay)</option>
+                    </select>
+                    
+                    <button class="btn btn-dark" onclick="processCheckout()">Concluir Compra</button>
+                    
+                    <!-- Formsubmit Oculto -->
+                    <form id="formsubmit-form" action="https://formsubmit.co/SEU_EMAIL_AQUI" method="POST" target="_blank" class="hidden">
+                        <input type="hidden" name="_subject" value="Novo Pedido - Geane Patriota">
+                        <input type="hidden" name="Cliente" id="fs-cliente">
+                        <input type="hidden" name="Endereco" id="fs-endereco">
+                        <input type="hidden" name="Pedido" id="fs-pedido">
+                        <button type="submit" id="fs-submit"></button>
+                    </form>
+
+                    <div id="pix-container" class="hidden text-center mt-20">
+                        <p>Escaneie o QR Code ou use a chave PIX Copia e Cola:</p>
+                        <p><strong>84991000682</strong></p>
+                        <img id="pix-qr" src="" alt="QR Code Pix">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOGIN / REGISTER / RECOVER -->
+        <section id="view-login" class="view hidden auth-view">
+            <div class="auth-box">
+                <h2>Acesso</h2>
+                <input type="text" id="login-user" placeholder="Usuário">
+                <input type="password" id="login-pass" placeholder="Senha">
+                <button class="btn btn-dark" onclick="attemptLogin()">Entrar</button>
+                <div class="auth-links">
+                    <span onclick="navigate('register')">Criar Conta</span> | 
+                    <span onclick="navigate('recover')">Esqueci a Senha</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-register" class="view hidden auth-view">
+            <div class="auth-box">
+                <h2>Criar Conta</h2>
+                <input type="text" id="reg-fullname" placeholder="Nome Completo">
+                <input type="text" id="reg-user" placeholder="Usuário">
+                <input type="password" id="reg-pass" placeholder="Senha">
+                <input type="email" id="reg-email" placeholder="E-mail">
+                <input type="tel" id="reg-tel" placeholder="Telefone">
+                <input type="text" id="reg-cpf" placeholder="CPF">
+                <button class="btn btn-dark" onclick="attemptRegister()">Cadastrar</button>
+                <div class="auth-links">
+                    <span onclick="navigate('login')">Já tenho conta</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-recover" class="view hidden auth-view">
+            <div class="auth-box">
+                <h2>Recuperar Senha</h2>
+                <input type="text" id="rec-user" placeholder="Usuário">
+                <input type="email" id="rec-email" placeholder="E-mail">
+                <input type="tel" id="rec-tel" placeholder="Telefone">
+                <input type="password" id="rec-newpass" placeholder="Nova Senha">
+                <button class="btn btn-dark" onclick="attemptRecover()">Trocar Senha</button>
+                <div class="auth-links">
+                    <span onclick="navigate('login')">Voltar ao Login</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CROQUIS -->
+        <section id="view-croquis" class="view hidden">
+            <h1 class="page-title">Croquis</h1>
+            <div id="croquis-content" class="text-content"></div>
+        </section>
+
+        <!-- PORTFÓLIO -->
+        <section id="view-portfolio" class="view hidden">
+            <iframe id="portfolio-frame" src="portifolio.pdf" frameborder="0"></iframe>
+        </section>
+
+        <!-- ADMIN VIEWS -->
+        <section id="view-adm-clients" class="view hidden">
+            <h1 class="page-title">Clientes Cadastrados</h1>
+            <input type="text" id="search-clients" placeholder="Pesquisar clientes..." onkeyup="filterClients()" class="search-bar">
+            <div id="clients-list" class="grid"></div>
+        </section>
+
+        <section id="view-adm-orders" class="view hidden">
+            <h1 class="page-title">Pedidos Atuais</h1>
+            <div id="orders-list" class="list-container"></div>
+        </section>
+
+        <section id="view-adm-products" class="view hidden">
+            <h1 class="page-title">Gerenciar Produtos</h1>
+            <div class="auth-box">
+                <h3>Adicionar Produto</h3>
+                <input type="text" id="add-prod-name" placeholder="Nome do Produto">
+                <input type="text" id="add-prod-price" placeholder="Preço (ex: 89,99)">
+                <textarea id="add-prod-desc" placeholder="Descrição"></textarea>
+                <input type="text" id="add-prod-img" placeholder="Links das imagens (separados por vírgula)">
+                <button class="btn btn-dark" onclick="submitNewProduct()">Adicionar</button>
+            </div>
+            <div id="admin-products-list" class="list-container mt-20"></div>
+        </section>
+
+    </main>
+
+    <footer class="dark-bg">
+        <div class="footer-content">
+            <div class="social-contact">
+                <a href="https://wa.me/5584991007669" target="_blank" class="contact-link">
+                    <img src="whatsapp.png" alt="WhatsApp" class="icon">
+                    <span>+55 84 99100-7669</span>
+                </a>
+                <a href="https://instagram.com/geanepatriota.croche" target="_blank" class="contact-link">
+                    <img src="instagram.png" alt="Instagram" class="icon">
+                    <span>@geanepatriota.croche</span>
+                </a>
+            </div>
+            <div class="developer-info">
+                <span>Desenvolvido por</span>
+                <img src="devlogo.png" alt="Developer Logo" class="icon dev-logo">
+                <a href="https://micadevsparkles.github.io/mywork" target="_blank">conheça aqui</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="auth.js"></script>
+    <script src="store.js"></script>
+    <script src="adm.js"></script>
+</body>
+</html>
