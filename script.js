@@ -1,5 +1,5 @@
 // INSIRA SUA URL DO GOOGLE APPS SCRIPT AQUI
-const GAS_URL = 'COLE_AQUI_A_URL_DO_SEU_WEB_APP';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwKSC-j7qlQII2iKxBi6MI3bE6zWTg2VOU8Cgil6RP_A0D6tX5uZa7MmDSuOVF4R5of/exec';
 
 // Elementos Globais
 const loadingOverlay = document.getElementById('loading-overlay');
