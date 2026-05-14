@@ -1,98 +1,112 @@
-let currentUser = null;
+const SCRIPT_URL = typeof APP_SCRIPT_URL !== 'undefined' ? APP_SCRIPT_URL : '';
 
-function updateAvatar() {
-    const avatar = document.getElementById('user-avatar');
-    if (currentUser) {
-        avatar.innerText = currentUser.fullname.charAt(0).toUpperCase();
-        document.getElementById('unauth-menu').classList.add('hidden');
-        document.getElementById('auth-menu').classList.remove('hidden');
-        document.getElementById('user-greeting').innerText = `Olá, ${currentUser.fullname}!`;
-        
-        if (currentUser.user === 'geane.adm') {
-            document.getElementById('admin-links').classList.remove('hidden');
-        } else {
-            document.getElementById('admin-links').classList.add('hidden');
-        }
+function showLoader() { document.getElementById('loader').classList.remove('hidden'); }
+function hideLoader() { document.getElementById('loader').classList.add('hidden'); }
+function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+}
+
+function validatePassword(pass) {
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\W])[A-Za-z\d@$!%*?&\W]{6,20}$/;
+    return re.test(pass);
+}
+
+function validateCPF(cpf) {
+    return /^\d{11}$/.test(cpf);
+}
+
+async function apiRequest(data) {
+    showLoader();
+    try {
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
+        const result = await response.json();
+        hideLoader();
+        return result;
+    } catch (e) {
+        hideLoader();
+        console.error(e);
+        return { success: false };
+    }
+}
+
+async function login() {
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPassword').value;
+    if(!email || !pass) return alert("Preencha todos os campos.");
+    
+    const res = await apiRequest({ action: 'login', email: email, password: pass });
+    if(res.success) {
+        localStorage.setItem('user', JSON.stringify(res.user));
+        initApp();
     } else {
-        avatar.innerText = "?";
-        document.getElementById('unauth-menu').classList.remove('hidden');
-        document.getElementById('auth-menu').classList.add('hidden');
-        document.getElementById('admin-links').classList.add('hidden');
+        alert("Credenciais inválidas.");
     }
 }
 
-function checkSession() {
-    const saved = localStorage.getItem('luxuryStoreUser');
-    if (saved) {
-        currentUser = JSON.parse(saved);
-        if(currentUser.cart && currentUser.cart !== "") {
-            currentCart = currentUser.cart.split(',');
-        }
-        updateCartCount();
-        updateAvatar();
-    }
-}
+async function register() {
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    const tel = document.getElementById('regTel').value;
+    const cpf = document.getElementById('regCpf').value;
+    const pass = document.getElementById('regPassword').value;
+    const passConf = document.getElementById('regPasswordConfirm').value;
 
-function doLogout() {
-    currentUser = null;
-    currentCart = [];
-    localStorage.removeItem('luxuryStoreUser');
-    updateAvatar();
-    navigate('login');
-}
+    if(!name || !email || !tel || !cpf || !pass) return alert("Preencha tudo.");
+    if(!validateCPF(cpf)) return alert("CPF deve ter 11 dígitos numéricos.");
+    if(pass !== passConf) return alert("As senhas não coincidem.");
+    if(!validatePassword(pass)) return alert("Senha não atende aos requisitos.");
 
-async function attemptLogin() {
-    const u = document.getElementById('login-user').value;
-    const p = document.getElementById('login-pass').value;
-    if(!u || !p) return alert("Preencha todos os campos.");
-
-    const res = await apiRequest({ action: 'login', user: u, password: p });
-    if (res.success) {
-        currentUser = res.user;
-        localStorage.setItem('luxuryStoreUser', JSON.stringify(currentUser));
-        if(currentUser.cart && currentUser.cart !== "") {
-            currentCart = currentUser.cart.split(',');
-        } else {
-            currentCart = [];
-        }
-        updateCartCount();
-        updateAvatar();
-        navigate('home');
+    const res = await apiRequest({ action: 'register', fullname: name, email: email, tel: tel, cpf: cpf, password: pass });
+    if(res.success) {
+        alert("Registrado com sucesso. Faça login.");
+        showView('login-view');
     } else {
-        alert(res.message);
+        alert("Erro ao registrar.");
     }
 }
 
-async function attemptRegister() {
-    const fn = document.getElementById('reg-fullname').value;
-    const u = document.getElementById('reg-user').value;
-    const p = document.getElementById('reg-pass').value;
-    const e = document.getElementById('reg-email').value;
-    const t = document.getElementById('reg-tel').value;
-    const c = document.getElementById('reg-cpf').value;
+async function resetPassword() {
+    const name = document.getElementById('resetName').value;
+    const email = document.getElementById('resetEmail').value;
+    const tel = document.getElementById('resetTel').value;
+    const newPass = document.getElementById('resetNewPass').value;
 
-    if(!fn || !u || !p || !e || !t || !c) return alert("Preencha todos os campos.");
+    if(!name || !email || !tel || !newPass) return alert("Preencha tudo.");
+    if(!validatePassword(newPass)) return alert("Nova senha fraca.");
 
-    const res = await apiRequest({ action: 'register', fullname: fn, user: u, password: p, email: e, tel: t, cpf: c });
-    if (res.success) {
-        currentUser = res.user;
-        localStorage.setItem('luxuryStoreUser', JSON.stringify(currentUser));
-        updateAvatar();
-        navigate('home');
+    const res = await apiRequest({ action: 'reset', fullname: name, email: email, tel: tel, newPassword: newPass });
+    if(res.success) {
+        alert("Senha redefinida.");
+        showView('login-view');
     } else {
-        alert(res.message);
+        alert("Dados não conferem.");
     }
 }
 
-async function attemptRecover() {
-    const u = document.getElementById('rec-user').value;
-    const e = document.getElementById('rec-email').value;
-    const t = document.getElementById('rec-tel').value;
-    const np = document.getElementById('rec-newpass').value;
-
-    if(!u || !e || !t || !np) return alert("Preencha todos os campos.");
-
-    const res = await apiRequest({ action: 'recover', user: u, email: e, tel: t, newPassword: np });
-    alert(res.message);
-    if(res.success) navigate('login');
+function logout() {
+    localStorage.removeItem('user');
+    document.getElementById('main-app').classList.add('hidden');
+    document.getElementById('auth-container').classList.remove('hidden');
+    document.getElementById('user-modal').classList.add('hidden');
 }
+
+function initApp() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if(user) {
+        document.getElementById('auth-container').classList.add('hidden');
+        document.getElementById('main-app').classList.remove('hidden');
+        document.getElementById('userAvatarBtn').innerText = user.fullname.charAt(0).toUpperCase();
+        document.getElementById('um-name').innerText = user.fullname;
+        document.getElementById('um-email').innerText = user.email;
+        loadProducts();
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    if(localStorage.getItem('user')) initApp();
+});
