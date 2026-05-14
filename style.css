@@ -65,7 +65,7 @@ header {
     justify-content: space-between; align-items: center; padding: 20px 50px;
     position: sticky; top: 0; z-index: 100;
 }
-.logo { max-height: 50px; filter: invert(1); }
+.logo { max-height: 50px;}
 nav button { background: none; border: none; color: var(--header-text); margin: 0 15px; font-family: var(--font-body); text-transform: uppercase; cursor: pointer; letter-spacing: 1px; }
 .header-icons { display: flex; align-items: center; gap: 20px; }
 .user-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; }
