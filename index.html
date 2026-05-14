@@ -3,212 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geane Patriota | Luxo</title>
+    <title>Geane Patriota | Luxury Brand</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <div id="loading-overlay" class="hidden">
+    <div id="loader" class="hidden">
         <div class="spinner"></div>
     </div>
 
-    <header class="dark-bg">
-        <div class="header-container">
-            <img src="logo.png" alt="Geane Patriota Logo" class="site-logo" onclick="navigate('home')">
-            <nav id="main-nav">
-                <a onclick="navigate('home')">Loja</a>
-                <a onclick="navigate('croquis')">Croquis</a>
-                <a onclick="navigate('portfolio')">Portfólio</a>
-                <div id="admin-links" class="hidden">
-                    <a onclick="navigate('adm-clients')">Clientes</a>
-                    <a onclick="navigate('adm-orders')">Pedidos</a>
-                    <a onclick="navigate('adm-products')">Produtos</a>
-                </div>
+    <!-- LANGUAGE TOGGLE -->
+    <button id="langToggle" onclick="toggleLanguage()"><i class="fa-solid fa-globe"></i> EN/PT</button>
+
+    <!-- AUTHENTICATION VIEWS -->
+    <div id="auth-container">
+        <div id="login-view" class="view active">
+            <h1 data-i18n="login_title">Login</h1>
+            <input type="email" id="loginEmail" placeholder="Email" data-i18n-ph="email_ph">
+            <input type="password" id="loginPassword" placeholder="Senha" data-i18n-ph="pass_ph">
+            <button onclick="login()" class="btn" data-i18n="btn_enter">Entrar</button>
+            <div class="auth-links">
+                <button class="text-btn" onclick="showView('reset-view')" data-i18n="btn_forgot">Esqueci a senha</button>
+                <button class="text-btn" onclick="showView('register-view')" data-i18n="btn_register">Registrar-se</button>
+            </div>
+        </div>
+
+        <div id="register-view" class="view hidden">
+            <h1 data-i18n="register_title">Registrar-se</h1>
+            <input type="text" id="regName" placeholder="Nome Completo" data-i18n-ph="name_ph">
+            <input type="email" id="regEmail" placeholder="Email" data-i18n-ph="email_ph">
+            <input type="text" id="regTel" placeholder="Telefone" data-i18n-ph="tel_ph">
+            <input type="text" id="regCpf" placeholder="CPF (11 dígitos)" data-i18n-ph="cpf_ph" maxlength="11">
+            <input type="password" id="regPassword" placeholder="Senha" data-i18n-ph="pass_ph">
+            <input type="password" id="regPasswordConfirm" placeholder="Confirmar Senha" data-i18n-ph="pass_conf_ph">
+            <small class="pass-rules" data-i18n="pass_rules">A senha deve ter entre 6 e 20 caracteres, incluindo maiúscula, minúscula, número e caractere especial.</small>
+            <button onclick="register()" class="btn" data-i18n="btn_register">Registrar</button>
+            <button class="text-btn mt-1" onclick="showView('login-view')" data-i18n="btn_back">Voltar</button>
+        </div>
+
+        <div id="reset-view" class="view hidden">
+            <h1 data-i18n="reset_title">Recuperar Senha</h1>
+            <input type="text" id="resetName" placeholder="Nome Completo" data-i18n-ph="name_ph">
+            <input type="email" id="resetEmail" placeholder="Email" data-i18n-ph="email_ph">
+            <input type="text" id="resetTel" placeholder="Telefone" data-i18n-ph="tel_ph">
+            <input type="password" id="resetNewPass" placeholder="Nova Senha" data-i18n-ph="new_pass_ph">
+            <button onclick="resetPassword()" class="btn" data-i18n="btn_reset">Criar nova senha</button>
+            <button class="text-btn mt-1" onclick="showView('login-view')" data-i18n="btn_back">Voltar</button>
+        </div>
+    </div>
+
+    <!-- MAIN APP VIEW -->
+    <div id="main-app" class="hidden">
+        <header>
+            <div class="logo-container">
+                <img src="logo.png" alt="Geane Patriota" class="logo">
+            </div>
+            <nav>
+                <button onclick="switchTab('home')" data-i18n="nav_home">Loja</button>
+                <button onclick="switchTab('croquis')" data-i18n="nav_croquis">Croquis</button>
+                <button onclick="switchTab('portifolio')" data-i18n="nav_portifolio">Portifólio</button>
             </nav>
-            <div class="user-menu" onclick="toggleUserMenu()">
-                <div id="user-avatar" class="avatar">?</div>
-                <div id="user-dropdown" class="dropdown hidden">
-                    <div id="unauth-menu">
-                        <p onclick="navigate('login')">Entrar / Cadastrar</p>
-                    </div>
-                    <div id="auth-menu" class="hidden">
-                        <p id="user-greeting">Olá!</p>
-                        <p onclick="viewCart()">Carrinho (<span id="cart-count">0</span>)</p>
-                        <p onclick="doLogout()">Sair da Conta</p>
-                    </div>
+            <div class="header-icons">
+                <div class="user-avatar" onclick="toggleUserModal()" id="userAvatarBtn">U</div>
+                <button class="cart-btn" onclick="toggleCartModal()"><i class="fa-solid fa-bag-shopping"></i> <span id="cart-count">0</span></button>
+            </div>
+        </header>
+
+        <div id="user-modal" class="modal-float hidden">
+            <p id="um-name"></p>
+            <p id="um-email"></p>
+            <button onclick="logout()" class="btn-small" data-i18n="btn_logout">Sair</button>
+        </div>
+
+        <div id="cart-modal" class="modal-float hidden">
+            <h3 data-i18n="cart_title">Carrinho</h3>
+            <div id="cart-items"></div>
+            <button class="btn" onclick="openCheckout()" data-i18n="btn_buy">Comprar</button>
+        </div>
+
+        <!-- TABS -->
+        <main>
+            <div id="tab-home" class="tab-content active">
+                <div class="products-grid" id="products-grid"></div>
+            </div>
+
+            <div id="tab-croquis" class="tab-content hidden">
+                <div class="gallery-grid" id="croquis-grid"></div>
+            </div>
+
+            <div id="tab-portifolio" class="tab-content hidden">
+                <div class="gallery-grid" id="portifolio-grid"></div>
+            </div>
+        </main>
+
+        <!-- PRODUCT PAGE MODAL -->
+        <div id="product-page" class="full-modal hidden">
+            <button class="close-btn" onclick="closeProductPage()">&times;</button>
+            <div class="product-page-content">
+                <div class="prod-img-col" id="prod-page-imgs"></div>
+                <div class="prod-info-col">
+                    <h2 id="prod-page-name"></h2>
+                    <p class="price" id="prod-page-price"></p>
+                    <div class="desc" id="prod-page-desc"></div>
+                    <button class="btn" onclick="addToCartCurrent()" data-i18n="btn_add_cart">Adicionar ao Carrinho</button>
                 </div>
             </div>
         </div>
-    </header>
 
-    <main id="app-content">
-        <!-- LOJA -->
-        <section id="view-home" class="view active">
-            <h1 class="page-title">Coleção Exclusiva</h1>
-            <div id="product-grid" class="grid"></div>
-        </section>
-
-        <!-- DETALHES DO PRODUTO -->
-        <section id="view-product-detail" class="view hidden">
-            <div class="product-detail-container">
-                <div class="product-images" id="pd-images"></div>
-                <div class="product-info">
-                    <h2 id="pd-title"></h2>
-                    <p id="pd-price" class="price"></p>
-                    <p id="pd-desc" class="description"></p>
-                    <div class="actions">
-                        <button onclick="changeQty(-1)">-</button>
-                        <span id="pd-qty">1</span>
-                        <button onclick="changeQty(1)">+</button>
-                        <button class="btn btn-dark" onclick="addToCart()">Adicionar ao Carrinho</button>
-                        <button class="btn btn-outline" onclick="goToCheckout()">Comprar</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CHECKOUT -->
-        <section id="view-checkout" class="view hidden">
-            <h2 class="page-title">Finalizar Pedido</h2>
-            <div class="checkout-container">
-                <div id="checkout-cart" class="cart-items"></div>
-                <div class="checkout-form">
-                    <h3>Total: <span id="checkout-total">R$ 0,00</span></h3>
-                    <select id="checkout-shipping">
-                        <option value="entrega">Entrega</option>
-                        <option value="retirada">Retirada na Loja</option>
-                    </select>
-                    <textarea id="checkout-address" placeholder="Endereço Completo (se entrega)"></textarea>
-                    
-                    <select id="checkout-payment">
-                        <option value="pix">PIX</option>
-                        <option value="cartao">Cartão (InfinitePay)</option>
-                    </select>
-                    
-                    <button class="btn btn-dark" onclick="processCheckout()">Concluir Compra</button>
-                    
-                    <!-- Formsubmit Oculto -->
-                    <form id="formsubmit-form" action="https://formsubmit.co/geanepatriota14@gmail.com" method="POST" target="_blank" class="hidden">
-                        <input type="hidden" name="_subject" value="Novo Pedido - Geane Patriota">
-                        <input type="hidden" name="Cliente" id="fs-cliente">
-                        <input type="hidden" name="Endereco" id="fs-endereco">
-                        <input type="hidden" name="Pedido" id="fs-pedido">
-                        <button type="submit" id="fs-submit"></button>
-                    </form>
-
-                    <div id="pix-container" class="hidden text-center mt-20">
-                        <p>Escaneie o QR Code ou use a chave PIX Copia e Cola:</p>
-                        <p><strong>84991000682</strong></p>
-                        <img id="pix-qr" src="" alt="QR Code Pix">
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- LOGIN / REGISTER / RECOVER -->
-        <section id="view-login" class="view hidden auth-view">
-            <div class="auth-box">
-                <h2>Acesso</h2>
-                <input type="text" id="login-user" placeholder="Usuário">
-                <input type="password" id="login-pass" placeholder="Senha">
-                <button class="btn btn-dark" onclick="attemptLogin()">Entrar</button>
-                <div class="auth-links">
-                    <span onclick="navigate('register')">Criar Conta</span> | 
-                    <span onclick="navigate('recover')">Esqueci a Senha</span>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-register" class="view hidden auth-view">
-            <div class="auth-box">
-                <h2>Criar Conta</h2>
-                <input type="text" id="reg-fullname" placeholder="Nome Completo">
-                <input type="text" id="reg-user" placeholder="Usuário">
-                <input type="password" id="reg-pass" placeholder="Senha">
-                <input type="email" id="reg-email" placeholder="E-mail">
-                <input type="tel" id="reg-tel" placeholder="Telefone">
-                <input type="text" id="reg-cpf" placeholder="CPF">
-                <button class="btn btn-dark" onclick="attemptRegister()">Cadastrar</button>
-                <div class="auth-links">
-                    <span onclick="navigate('login')">Já tenho conta</span>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-recover" class="view hidden auth-view">
-            <div class="auth-box">
-                <h2>Recuperar Senha</h2>
-                <input type="text" id="rec-user" placeholder="Usuário">
-                <input type="email" id="rec-email" placeholder="E-mail">
-                <input type="tel" id="rec-tel" placeholder="Telefone">
-                <input type="password" id="rec-newpass" placeholder="Nova Senha">
-                <button class="btn btn-dark" onclick="attemptRecover()">Trocar Senha</button>
-                <div class="auth-links">
-                    <span onclick="navigate('login')">Voltar ao Login</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- CROQUIS -->
-        <section id="view-croquis" class="view hidden">
-            <h1 class="page-title">Croquis</h1>
-            <div id="croquis-content" class="text-content"></div>
-        </section>
-
-        <!-- PORTFÓLIO -->
-        <section id="view-portfolio" class="view hidden">
-            <iframe id="portfolio-frame" src="portifolio.pdf" frameborder="0"></iframe>
-        </section>
-
-        <!-- ADMIN VIEWS -->
-        <section id="view-adm-clients" class="view hidden">
-            <h1 class="page-title">Clientes Cadastrados</h1>
-            <input type="text" id="search-clients" placeholder="Pesquisar clientes..." onkeyup="filterClients()" class="search-bar">
-            <div id="clients-list" class="grid"></div>
-        </section>
-
-        <section id="view-adm-orders" class="view hidden">
-            <h1 class="page-title">Pedidos Atuais</h1>
-            <div id="orders-list" class="list-container"></div>
-        </section>
-
-        <section id="view-adm-products" class="view hidden">
-            <h1 class="page-title">Gerenciar Produtos</h1>
-            <div class="auth-box">
-                <h3>Adicionar Produto</h3>
-                <input type="text" id="add-prod-name" placeholder="Nome do Produto">
-                <input type="text" id="add-prod-price" placeholder="Preço (ex: 89,99)">
-                <textarea id="add-prod-desc" placeholder="Descrição"></textarea>
-                <input type="text" id="add-prod-img" placeholder="Links das imagens (separados por vírgula)">
-                <button class="btn btn-dark" onclick="submitNewProduct()">Adicionar</button>
-            </div>
-            <div id="admin-products-list" class="list-container mt-20"></div>
-        </section>
-
-    </main>
-
-    <footer class="dark-bg">
-        <div class="footer-content">
-            <div class="social-contact">
-                <a href="https://wa.me/5584991007669" target="_blank" class="contact-link">
-                    <img src="whatsapp.png" alt="WhatsApp" class="icon">
-                    <span>+55 84 99100-7669</span>
-                </a>
-                <a href="https://instagram.com/geanepatriota.croche" target="_blank" class="contact-link">
-                    <img src="instagram.png" alt="Instagram" class="icon">
-                    <span>@geanepatriota.croche</span>
-                </a>
-            </div>
-            <div class="developer-info">
-                <span>Desenvolvido por</span>
-                <img src="devlogo.png" alt="Developer Logo" class="icon dev-logo">
-                <a href="https://micadevsparkles.github.io/mywork" target="_blank">conheça aqui</a>
+        <!-- CHECKOUT MODAL -->
+        <div id="checkout-modal" class="full-modal hidden">
+            <button class="close-btn" onclick="closeCheckout()">&times;</button>
+            <div class="checkout-form-container">
+                <h2 data-i18n="checkout_title">Finalizar Pedido</h2>
+                <input type="text" id="chkName" placeholder="Nome Completo" readonly>
+                <select id="chkShipping" onchange="toggleAddress()">
+                    <option value="entrega" data-i18n="opt_delivery">Entrega</option>
+                    <option value="retirada" data-i18n="opt_pickup">Retirada</option>
+                </select>
+                <input type="text" id="chkAddress" placeholder="Endereço Completo">
+                <p id="pickup-address" class="hidden">Rua dos bobos, numero 0, ceara-mirim/rn - brasil</p>
+                <input type="text" id="chkCpf" placeholder="CPF" readonly>
+                <input type="text" id="chkTel" placeholder="Telefone" readonly>
+                <button class="btn" onclick="submitOrder()" data-i18n="btn_finish">Concluir Pagamento</button>
             </div>
         </div>
-    </footer>
 
-    <script src="script.js"></script>
+        <!-- LIGHTBOX -->
+        <div id="lightbox" class="full-modal hidden" onclick="closeLightbox()">
+            <img id="lightbox-img" src="">
+        </div>
+
+        <footer>
+            <div class="footer-info">
+                <p><i class="fa-solid fa-map-pin"></i> Rua dos bobos, numero 0, ceara-mirim/rn - brasil</p>
+                <p><i class="fa-brands fa-whatsapp"></i> +55 84 99100-7669</p>
+                <p><i class="fa-brands fa-instagram"></i> @geanepatriota.croche</p>
+            </div>
+            <div class="dev-credits">
+                <p data-i18n="dev_by">Desenvolvido por</p>
+                <img src="devlogo.png" alt="MicaDev" class="dev-logo">
+                <a href="https://micadevsparkles.github.io/mywork" target="_blank" data-i18n="know_here">conheça aqui</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>const APP_SCRIPT_URL = "SUA_URL_DO_WEB_APP_AQUI";</script>
+    <script src="language.js"></script>
     <script src="auth.js"></script>
-    <script src="store.js"></script>
-    <script src="adm.js"></script>
+    <script src="products.js"></script>
+    <script src="home.js"></script>
+    <script src="croquis.js"></script>
+    <script src="portifolio.js"></script>
 </body>
 </html>
