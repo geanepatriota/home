@@ -115,9 +115,82 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
 .dev-logo { height: 30px; filter: invert(1); }
 .dev-credits a { color: var(--text-color); font-weight: 600; }
 
+/* --- MELHORIAS DE RESPONSIVIDADE E AJUSTES MOBILE --- */
+
 @media (max-width: 768px) {
-    header { padding: 15px 20px; flex-direction: column; gap: 15px; }
-    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    .product-page-content { flex-direction: column; }
-    footer { flex-direction: column; gap: 30px; text-align: center; }
+    /* Ajuste de Padding Global para não encostar nas bordas */
+    main { padding: 20px; }
+
+    /* Header Organizado em linha no mobile */
+    header { 
+        padding: 10px 15px; 
+        flex-direction: row; /* Mantém logo e ícones na mesma linha */
+        justify-content: space-between;
+        gap: 10px; 
+    }
+    
+    .logo { max-height: 35px; } /* Logo menor no mobile */
+    
+    nav { display: none; } /* Esconde menus de texto se houver muitos, ou mantenha se forem poucos */
+    
+    .header-icons { gap: 10px; }
+
+    /* Grid de Produtos - Ajuste de escala */
+    .products-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px; 
+    }
+
+    .product-card h3 { font-size: 0.9rem; }
+
+    /* Página do Produto - Empilhamento correto */
+    .product-page-content { 
+        flex-direction: column; 
+        margin: 20px auto;
+        gap: 20px;
+    }
+    
+    .prod-info-col h2 { font-size: 1.8rem; }
+
+    /* Modais e Carrinho flutuante */
+    .modal-float { 
+        right: 5%; 
+        left: 5%; 
+        width: 90%; /* Ocupa quase toda a largura no mobile */
+        top: 70px;
+    }
+
+    /* Footer */
+    footer { 
+        flex-direction: column; 
+        gap: 20px; 
+        text-align: center; 
+        padding: 30px 20px;
+    }
+
+    /* Checkout e Auth */
+    #auth-container, .checkout-form-container {
+        width: 90%;
+        margin: 5vh auto;
+        padding: 20px;
+    }
+}
+
+/* Ajuste para telas muito pequenas (iPhone SE, etc) */
+@media (max-width: 480px) {
+    .products-grid { 
+        grid-template-columns: 1fr; /* Um produto por linha se a tela for minúscula */
+    }
+    
+    .auth-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Correção de Overflow (Evita que o site "dance" para os lados) */
+html, body {
+    overflow-x: hidden;
+    position: relative;
+    max-width: 100%;
 }
