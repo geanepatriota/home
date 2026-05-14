@@ -74,7 +74,7 @@ nav button { background: none; border: none; color: var(--header-text); margin: 
 /* Modals */
 .modal-float { position: fixed; top: 80px; right: 50px; background: var(--bg-color); border: 1px solid var(--border); padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 200; width: 300px; }
 .full-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-color); z-index: 300; overflow-y: auto; }
-.close-btn { position: absolute; top: 20px; right: 30px; font-size: 2rem; background: none; border: none; cursor: pointer; }
+.close-btn { position: absolute; top: 20px; right: 30px; font-size: 2rem; background: none; border: none; cursor: pointer; z-index: 310; }
 
 /* Cart items */
 .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
@@ -91,7 +91,14 @@ main { padding: 50px; min-height: 60vh; }
 /* Product Page */
 .product-page-content { display: flex; max-width: 1000px; margin: 80px auto; gap: 50px; padding: 20px; }
 .prod-img-col { flex: 1; }
-.prod-img-col img { width: 100%; margin-bottom: 20px; }
+/* AJUSTE: Limite para não sobrepor o fechar */
+.prod-img-col img { 
+    width: 100%; 
+    max-height: 70vh; 
+    object-fit: contain; 
+    margin-top: 40px; 
+    margin-bottom: 20px; 
+}
 .prod-info-col { flex: 1; }
 .prod-info-col h2 { font-size: 2.5rem; margin-bottom: 15px; }
 .prod-info-col .price { font-size: 1.5rem; font-weight: 600; margin-bottom: 30px; }
@@ -118,24 +125,39 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
 /* --- MELHORIAS DE RESPONSIVIDADE E AJUSTES MOBILE --- */
 
 @media (max-width: 768px) {
-    /* Ajuste de Padding Global para não encostar nas bordas */
     main { padding: 20px; }
 
-    /* Header Organizado em linha no mobile */
     header { 
         padding: 10px 15px; 
-        flex-direction: row; /* Mantém logo e ícones na mesma linha */
-        justify-content: space-between;
-        gap: 10px; 
+        display: flex;
+        justify-content: center; /* Centraliza logo */
+        align-items: center;
+        position: sticky;
+        top: 0;
     }
     
-    .logo { max-height: 35px; } /* Logo menor no mobile */
+    .logo { max-height: 35px; margin: 0 auto; } 
     
-    nav { display: none; } /* Esconde menus de texto se houver muitos, ou mantenha se forem poucos */
-    
-    .header-icons { gap: 10px; }
+    /* Fixa o botão de idioma à esquerda no mobile */
+    #langToggle {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0;
+    }
 
-    /* Grid de Produtos - Ajuste de escala */
+    nav { display: none; } 
+    
+    .header-icons { 
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        gap: 10px; 
+    }
+
+    /* Grid de Produtos - Ajustado para 2 cards horizontais */
     .products-grid { 
         grid-template-columns: repeat(2, 1fr); 
         gap: 15px; 
@@ -143,7 +165,6 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
 
     .product-card h3 { font-size: 0.9rem; }
 
-    /* Página do Produto - Empilhamento correto */
     .product-page-content { 
         flex-direction: column; 
         margin: 20px auto;
@@ -152,15 +173,13 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
     
     .prod-info-col h2 { font-size: 1.8rem; }
 
-    /* Modais e Carrinho flutuante */
     .modal-float { 
         right: 5%; 
         left: 5%; 
-        width: 90%; /* Ocupa quase toda a largura no mobile */
+        width: 90%; 
         top: 70px;
     }
 
-    /* Footer */
     footer { 
         flex-direction: column; 
         gap: 20px; 
@@ -168,7 +187,6 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
         padding: 30px 20px;
     }
 
-    /* Checkout e Auth */
     #auth-container, .checkout-form-container {
         width: 90%;
         margin: 5vh auto;
@@ -176,10 +194,11 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
     }
 }
 
-/* Ajuste para telas muito pequenas (iPhone SE, etc) */
+/* Ajuste para telas muito pequenas */
 @media (max-width: 480px) {
     .products-grid { 
-        grid-template-columns: 1fr; /* Um produto por linha se a tela for minúscula */
+        grid-template-columns: repeat(2, 1fr); /* Mantém 2 cards mesmo em telas minúsculas */
+        gap: 10px;
     }
     
     .auth-links {
@@ -188,7 +207,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
     }
 }
 
-/* Correção de Overflow (Evita que o site "dance" para os lados) */
+/* Correção de Overflow */
 html, body {
     overflow-x: hidden;
     position: relative;
