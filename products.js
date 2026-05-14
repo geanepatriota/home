@@ -61,12 +61,14 @@ function openProductPage(prod) {
     addCartBtn.className = 'btn';
     addCartBtn.setAttribute('data-i18n', 'btn_add_cart');
     addCartBtn.innerText = 'Adicionar ao Carrinho';
-    addCartBtn.onclick = addToCartCurrent;
+    // Protegido com checkAuthBeforeAction
+    addCartBtn.onclick = () => checkAuthBeforeAction(addToCartCurrent);
 
     const buyNowBtn = document.createElement('button');
     buyNowBtn.className = 'btn mt-1';
     buyNowBtn.innerText = 'Comprar Agora';
-    buyNowBtn.onclick = buyNowCurrent;
+    // Protegido com checkAuthBeforeAction
+    buyNowBtn.onclick = () => checkAuthBeforeAction(buyNowCurrent);
 
     infoCol.appendChild(addCartBtn);
     infoCol.appendChild(buyNowBtn);
