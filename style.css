@@ -112,7 +112,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
 .footer-info p { margin-bottom: 10px; }
 .footer-info i { width: 20px; }
 .dev-credits { display: flex; align-items: center; gap: 10px; }
-.dev-logo { height: 30px; filter: invert(1); }
+.dev-logo { height: 40px; filter: invert(1); }
 .dev-credits a { color: var(--text-color); font-weight: 600; }
 
 /* --- MELHORIAS DE RESPONSIVIDADE E AJUSTES MOBILE --- */
