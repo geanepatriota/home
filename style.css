@@ -81,7 +81,7 @@ nav button { background: none; border: none; color: var(--header-text); margin: 
 
 /* Products Grid */
 main { padding: 50px; min-height: 60vh; }
-.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 40px; }
+.products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; }
 .product-card { cursor: pointer; text-align: center; }
 .product-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; margin-bottom: 15px; transition: opacity 0.3s; }
 .product-card:hover img { opacity: 0.8; }
@@ -112,11 +112,12 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
 .footer-info p { margin-bottom: 10px; }
 .footer-info i { width: 20px; }
 .dev-credits { display: flex; align-items: center; gap: 10px; }
-.dev-logo { height: 30px; }
+.dev-logo { height: 30px; filter: invert(1); }
 .dev-credits a { color: var(--text-color); font-weight: 600; }
 
 @media (max-width: 768px) {
     header { padding: 15px 20px; flex-direction: column; gap: 15px; }
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
     .product-page-content { flex-direction: column; }
     footer { flex-direction: column; gap: 30px; text-align: center; }
 }
