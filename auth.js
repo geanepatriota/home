@@ -90,40 +90,43 @@ async function resetPassword() {
 
 function logout() {
     localStorage.removeItem('user');
-    // Em vez de esconder tudo, apenas reinicializamos o estado para visitante
     initApp();
     document.getElementById('user-modal').classList.add('hidden');
 }
 
-// ALTERADO: Agora permite visualização sem login
 function initApp() {
     const user = JSON.parse(localStorage.getItem('user'));
+    const avatarBtn = document.getElementById('userAvatarBtn');
     
-    // Sempre mostra o app principal e esconde o container de login inicial
     document.getElementById('auth-container').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
     
     if(user) {
-        // Usuário Logado
-        document.getElementById('userAvatarBtn').innerText = user.fullname.charAt(0).toUpperCase();
+        avatarBtn.innerText = user.fullname.charAt(0).toUpperCase();
+        // Se logado, o botão abre o modal do usuário
+        avatarBtn.onclick = () => document.getElementById('user-modal').classList.toggle('hidden');
+        
         document.getElementById('um-name').innerText = user.fullname;
         document.getElementById('um-email').innerText = user.email;
-        // Mostra o botão de avatar/perfil
-        document.getElementById('userAvatarBtn').classList.remove('hidden');
+        avatarBtn.classList.remove('hidden');
     } else {
-        // Usuário Visitante
-        document.getElementById('userAvatarBtn').innerText = "?";
+        avatarBtn.innerText = "?";
+        // Se não logado, o botão redireciona para login
+        avatarBtn.onclick = () => {
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('auth-container').classList.remove('hidden');
+            showView('login-view');
+        };
+        
         document.getElementById('um-name').innerText = "Visitante";
         document.getElementById('um-email').innerText = "Faça login para comprar";
     }
     
-    // Carrega os produtos independente de estar logado ou não
     if (typeof loadProducts === 'function') {
         loadProducts();
     }
 }
 
-// Função auxiliar para você usar nos botões "Comprar" ou "Adicionar ao Carrinho" do seu app.js
 function checkAuthBeforeAction(callback) {
     if(localStorage.getItem('user')) {
         callback();
@@ -136,6 +139,5 @@ function checkAuthBeforeAction(callback) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    // Inicializa o app direto, o initApp cuidará de checar se há user ou não
     initApp();
 });
