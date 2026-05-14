@@ -53,7 +53,26 @@ function openProductPage(prod) {
         });
     }
 
+    const infoCol = document.querySelector('.prod-info-col');
+    const existingButtons = infoCol.querySelectorAll('.btn');
+    existingButtons.forEach(b => b.remove());
+
+    const addCartBtn = document.createElement('button');
+    addCartBtn.className = 'btn';
+    addCartBtn.setAttribute('data-i18n', 'btn_add_cart');
+    addCartBtn.innerText = 'Adicionar ao Carrinho';
+    addCartBtn.onclick = addToCartCurrent;
+
+    const buyNowBtn = document.createElement('button');
+    buyNowBtn.className = 'btn mt-1';
+    buyNowBtn.innerText = 'Comprar Agora';
+    buyNowBtn.onclick = buyNowCurrent;
+
+    infoCol.appendChild(addCartBtn);
+    infoCol.appendChild(buyNowBtn);
+
     document.getElementById('product-page').classList.remove('hidden');
+    if (typeof applyTranslations === 'function') applyTranslations();
 }
 
 function closeProductPage() {
@@ -71,6 +90,23 @@ function addToCartCurrent() {
     } else {
         alert("Produto já está no carrinho.");
     }
+}
+
+function buyNowCurrent() {
+    if (!currentProduct) return;
+    const existingIndex = cart.findIndex(i => i.code === currentProduct.code);
+    
+    cart.forEach(item => item.selected = false);
+
+    if (existingIndex === -1) {
+        cart.push({ ...currentProduct, selected: true, qty: 1 });
+    } else {
+        cart[existingIndex].selected = true;
+    }
+    
+    updateCartUI();
+    closeProductPage();
+    openCheckout();
 }
 
 function updateCartUI() {
