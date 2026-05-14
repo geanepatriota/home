@@ -90,23 +90,52 @@ async function resetPassword() {
 
 function logout() {
     localStorage.removeItem('user');
-    document.getElementById('main-app').classList.add('hidden');
-    document.getElementById('auth-container').classList.remove('hidden');
+    // Em vez de esconder tudo, apenas reinicializamos o estado para visitante
+    initApp();
     document.getElementById('user-modal').classList.add('hidden');
 }
 
+// ALTERADO: Agora permite visualização sem login
 function initApp() {
     const user = JSON.parse(localStorage.getItem('user'));
+    
+    // Sempre mostra o app principal e esconde o container de login inicial
+    document.getElementById('auth-container').classList.add('hidden');
+    document.getElementById('main-app').classList.remove('hidden');
+    
     if(user) {
-        document.getElementById('auth-container').classList.add('hidden');
-        document.getElementById('main-app').classList.remove('hidden');
+        // Usuário Logado
         document.getElementById('userAvatarBtn').innerText = user.fullname.charAt(0).toUpperCase();
         document.getElementById('um-name').innerText = user.fullname;
         document.getElementById('um-email').innerText = user.email;
+        // Mostra o botão de avatar/perfil
+        document.getElementById('userAvatarBtn').classList.remove('hidden');
+    } else {
+        // Usuário Visitante
+        document.getElementById('userAvatarBtn').innerText = "?";
+        document.getElementById('um-name').innerText = "Visitante";
+        document.getElementById('um-email').innerText = "Faça login para comprar";
+    }
+    
+    // Carrega os produtos independente de estar logado ou não
+    if (typeof loadProducts === 'function') {
         loadProducts();
     }
 }
 
+// Função auxiliar para você usar nos botões "Comprar" ou "Adicionar ao Carrinho" do seu app.js
+function checkAuthBeforeAction(callback) {
+    if(localStorage.getItem('user')) {
+        callback();
+    } else {
+        alert("Você precisa estar logado para realizar esta ação.");
+        document.getElementById('main-app').classList.add('hidden');
+        document.getElementById('auth-container').classList.remove('hidden');
+        showView('login-view');
+    }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
-    if(localStorage.getItem('user')) initApp();
+    // Inicializa o app direto, o initApp cuidará de checar se há user ou não
+    initApp();
 });
