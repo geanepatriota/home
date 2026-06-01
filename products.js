@@ -43,14 +43,95 @@ function openProductPage(prod) {
     
     const imgCol = document.getElementById('prod-page-imgs');
     imgCol.innerHTML = '';
+    
     if (prod.img && prod.img.length > 0) {
-        prod.img.forEach(src => {
-            if (src.trim() !== '') {
+        // Filtra imagens válidas
+        const validImgs = prod.img.filter(src => src.trim() !== '');
+        
+        if (validImgs.length > 0) {
+            // Estilos dinâmicos para esconder a barra de rolagem horizontal nativa
+            if (!document.getElementById('gallery-style')) {
+                const style = document.createElement('style');
+                style.id = 'gallery-style';
+                style.innerHTML = `
+                    .gallery-track::-webkit-scrollbar { display: none; }
+                    .gallery-track { -ms-overflow-style: none; scrollbar-width: none; }
+                `;
+                document.head.appendChild(style);
+            }
+
+            // Container pai da galeria
+            const galleryWrapper = document.createElement('div');
+            galleryWrapper.style.position = 'relative';
+            galleryWrapper.style.width = '100%';
+
+            // Trilha de rolagem horizontal
+            const track = document.createElement('div');
+            track.className = 'gallery-track';
+            track.style.display = 'flex';
+            track.style.overflowX = 'auto';
+            track.style.scrollSnapType = 'x mandatory'; // Trava a rolagem na imagem perfeitamente
+            track.style.scrollBehavior = 'smooth';
+            track.style.width = '100%';
+
+            // Container das bolinhas
+            const dotsContainer = document.createElement('div');
+            dotsContainer.style.display = 'flex';
+            dotsContainer.style.justifyContent = 'center';
+            dotsContainer.style.gap = '10px';
+            dotsContainer.style.marginTop = '15px';
+
+            validImgs.forEach((src, index) => {
+                // Invólucro da Imagem
+                const imgWrapper = document.createElement('div');
+                imgWrapper.style.flex = '0 0 100%'; // Ocupa 100% do espaço visível
+                imgWrapper.style.scrollSnapAlign = 'start'; // Alinhamento no slide
+                
                 const img = document.createElement('img');
                 img.src = src.trim();
-                imgCol.appendChild(img);
+                img.style.width = '100%';
+                img.style.display = 'block';
+                
+                imgWrapper.appendChild(img);
+                track.appendChild(imgWrapper);
+
+                // Bolinha indicadora
+                const dot = document.createElement('div');
+                dot.style.width = '12px';
+                dot.style.height = '12px';
+                dot.style.borderRadius = '50%';
+                // Cores puxadas das suas variáveis CSS
+                dot.style.backgroundColor = index === 0 ? 'var(--text-color)' : 'var(--border)';
+                dot.style.cursor = 'pointer';
+                dot.style.transition = 'background-color 0.3s';
+                
+                // Evento de clique para pular para a imagem correta
+                dot.onclick = () => {
+                    track.scrollTo({ left: track.clientWidth * index, behavior: 'smooth' });
+                };
+                
+                dotsContainer.appendChild(dot);
+            });
+
+            // Atualiza a cor da bolinha conforme desliza manualmente (Mobile ou Scroll)
+            track.addEventListener('scroll', () => {
+                const scrollPos = track.scrollLeft;
+                const index = Math.round(scrollPos / track.clientWidth);
+                const dots = dotsContainer.children;
+                for (let i = 0; i < dots.length; i++) {
+                    dots[i].style.backgroundColor = i === index ? 'var(--text-color)' : 'var(--border)';
+                }
+            });
+
+            galleryWrapper.appendChild(track);
+            
+            // Só exibe as bolinhas se houver mais de 1 imagem
+            if (validImgs.length > 1) {
+                galleryWrapper.appendChild(dotsContainer);
             }
-        });
+            
+            imgCol.appendChild(galleryWrapper);
+        }
     }
 
     const infoCol = document.querySelector('.prod-info-col');
