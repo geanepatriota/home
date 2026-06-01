@@ -2,7 +2,7 @@ let globalProducts = [];
 let cart = [];
 let currentProduct = null;
 
-const INFINITE_BASE = "https://checkout.infinitepay.io/audaces?items=";
+const INFINITE_BASE = "https://checkout.infinitepay.io/geane-rodrigues-v19?items=";
 const STORE_URL = "https://geanepatriota.github.io/home/";
 
 document.addEventListener('DOMContentLoaded', loadProducts);
