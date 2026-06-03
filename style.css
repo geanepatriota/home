@@ -57,7 +57,14 @@ input:focus { border-color: var(--text-color); }
 .auth-links { display: flex; justify-content: space-between; margin-top: 20px; font-size: 0.9rem; }
 .pass-rules { display: block; font-size: 0.75rem; color: #666; margin-bottom: 15px; text-align: left; }
 
-#langToggle { position: fixed; top: 10px; left: 10px; z-index: 1000; background: none; border: none; cursor: pointer; font-family: var(--font-body); }
+/* Header Buttons */
+#langToggle { background: none; border: none; color: var(--header-text); cursor: pointer; font-family: var(--font-body); font-size: 1rem; }
+#hamburger-btn { background: none; border: none; color: var(--header-text); cursor: pointer; font-size: 1.5rem; display: none; }
+
+/* Mobile Menu Dropdown */
+#mobile-menu { background: var(--header-bg); position: fixed; top: 55px; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px 0; z-index: 200; box-shadow: 0 10px 15px rgba(0,0,0,0.5); }
+#mobile-menu button { background: none; border: none; color: var(--header-text); padding: 15px; width: 100%; font-family: var(--font-body); text-transform: uppercase; cursor: pointer; letter-spacing: 1px; }
+#mobile-menu .mobile-lang-btn { border-bottom: 1px solid var(--accent); margin-bottom: 10px; }
 
 /* Header */
 header {
@@ -139,15 +146,18 @@ footer { border-top: 1px solid var(--border); padding: 40px 50px; display: flex;
     .logo { max-height: 35px; margin: 0 auto; } 
     
     /* Fixa o botão de idioma à esquerda no mobile */
-    #langToggle {
+   /* Esconde o botão de idioma nativo e exibe o hamburger no mobile */
+    #langToggle { display: none; }
+    
+    #hamburger-btn {
+        display: block;
         position: absolute;
-        left: 10px;
+        left: 15px;
         top: 50%;
         transform: translateY(-50%);
-        margin: 0;
     }
 
-    nav { display: none; } 
+    nav { display: none; }
     
     .header-icons { 
         position: absolute;
