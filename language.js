@@ -30,8 +30,19 @@ const dict = {
 let currentLang = 'pt';
 
 function toggleLanguage() {
+    // 1. Alterna o idioma interno e traduz a estrutura estática (seu dicionário)
     currentLang = currentLang === 'pt' ? 'en' : 'pt';
     applyTranslations();
+
+    // 2. Altera a tag HTML do site para ajudar o navegador
+    document.documentElement.lang = currentLang === 'pt' ? 'pt-BR' : 'en';
+
+    // 3. Aciona o tradutor do Google para o conteúdo dinâmico (produtos/planilha)
+    const googleSelect = document.querySelector('.goog-te-combo');
+    if (googleSelect) {
+        googleSelect.value = currentLang;
+        googleSelect.dispatchEvent(new Event('change'));
+    }
 }
 
 function applyTranslations() {
