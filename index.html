@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geane Patriota | Luxury Brand</title>
+    <title>Geane Patriota</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,11 +13,6 @@
     <div id="loader" class="hidden">
         <div class="spinner"></div>
     </div>
-
-    <!-- LANGUAGE TOGGLE -->
-<button id="langToggle" onclick="toggleLanguage()" style="color: #ffffff; background: none; border: none; cursor: pointer; font-family: var(--font-body);">
-    <i class="fa-solid fa-globe"></i> EN/PT
-</button>
 
     <!-- AUTHENTICATION VIEWS -->
     <div id="auth-container">
@@ -59,6 +54,8 @@
     <!-- MAIN APP VIEW -->
     <div id="main-app" class="hidden">
         <header>
+            <button id="langToggle" onclick="toggleLanguage()"><i class="fa-solid fa-globe"></i> EN/PT</button>
+            <button id="hamburger-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
             <div class="logo-container">
                 <img src="logo.png" alt="Geane Patriota" class="logo">
             </div>
@@ -72,6 +69,12 @@
                 <button class="cart-btn" onclick="toggleCartModal()"><i class="fa-solid fa-bag-shopping"></i> <span id="cart-count">0</span></button>
             </div>
         </header>
+        <div id="mobile-menu" class="hidden">
+            <button class="mobile-lang-btn" onclick="toggleLanguage()"><i class="fa-solid fa-globe"></i> EN/PT</button>
+            <button onclick="switchTab('home'); toggleMobileMenu()" data-i18n="nav_home">Loja</button>
+            <button onclick="switchTab('croquis'); toggleMobileMenu()" data-i18n="nav_croquis">Croquis</button>
+            <button onclick="switchTab('portifolio'); toggleMobileMenu()" data-i18n="nav_portifolio">Portifólio</button>
+        </div>
 
         <div id="user-modal" class="modal-float hidden">
             <p id="um-name"></p>
@@ -169,5 +172,10 @@
     <script src="home.js"></script>
     <script src="croquis.js"></script>
     <script src="portifolio.js"></script>
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+    </script>
 </body>
 </html>
