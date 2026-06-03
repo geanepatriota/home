@@ -223,3 +223,32 @@ html, body {
     position: relative;
     max-width: 100%;
 }
+/* --- OCULTAR WIDGET E BALÕES DO GOOGLE TRANSLATE --- */
+
+/* Impede o Google de empurrar o site inteiro para baixo */
+body {
+    top: 0 !important;
+}
+
+/* Esconde a barra superior do Google Translate */
+.skiptranslate iframe, 
+.goog-te-banner-frame.skiptranslate {
+    display: none !important;
+}
+
+/* Esconde o balão/pop-up que aparece ao passar o mouse sobre o texto traduzido */
+#goog-gt-tt, 
+.goog-te-balloon-frame {
+    display: none !important;
+}
+
+/* Remove aquele fundo amarelo estranho que aparece ao passar o mouse no texto traduzido */
+.goog-text-highlight {
+    background: none !important;
+    box-shadow: none !important;
+}
+
+/* Garante que a div base do google fique invisível e não ocupe espaço */
+#google_translate_element {
+    display: none !important;
+}
